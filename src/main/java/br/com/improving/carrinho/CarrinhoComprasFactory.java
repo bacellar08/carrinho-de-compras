@@ -1,6 +1,9 @@
 package br.com.improving.carrinho;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Classe responsável pela criação e recuperação dos carrinhos de compras.
@@ -11,7 +14,11 @@ import java.math.BigDecimal;
  */
 public class CarrinhoComprasFactory {
 
+	Map<String, CarrinhoCompras> carrinhos;
+
 	public CarrinhoComprasFactory() {
+
+		this.carrinhos = new HashMap<String, CarrinhoCompras>();
 	}
 
     /**
@@ -23,6 +30,12 @@ public class CarrinhoComprasFactory {
      * @return CarrinhoCompras
      */
     public CarrinhoCompras criar(String identificacaoCliente) {
+
+		if(carrinhos.containsKey(identificacaoCliente)) {
+			return carrinhos.get(identificacaoCliente);
+		}
+		carrinhos.put(identificacaoCliente, new CarrinhoCompras());
+		return carrinhos.get(identificacaoCliente);
 
     }
 
@@ -36,6 +49,21 @@ public class CarrinhoComprasFactory {
      * @return BigDecimal
      */
     public BigDecimal getValorTicketMedio() {
+
+		if(carrinhos.isEmpty()) {
+			return BigDecimal.ZERO;
+		}
+
+		BigDecimal somaValores = BigDecimal.ZERO;
+
+		for (CarrinhoCompras carrinho : carrinhos.values()) {
+			somaValores = somaValores.add(carrinho.getValorTotal());
+		}
+
+		BigDecimal quantidadeCarrinhos = new BigDecimal(carrinhos.size());
+		BigDecimal TicketMedio = somaValores.divide(quantidadeCarrinhos, 2, RoundingMode.HALF_UP);
+
+		return TicketMedio;
 
     }
 
