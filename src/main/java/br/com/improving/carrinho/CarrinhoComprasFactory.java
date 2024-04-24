@@ -77,5 +77,11 @@ public class CarrinhoComprasFactory {
      */
     public boolean invalidar(String identificacaoCliente) {
 
+		if(!carrinhos.containsKey(identificacaoCliente)) {
+			return false;
+		}
+		carrinhos.remove(identificacaoCliente);
+		return true;
+
     }
 }
