@@ -2,12 +2,21 @@ package br.com.improving.carrinho;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Classe que representa o carrinho de compras de um cliente.
  */
 public class CarrinhoCompras {
+
+	public List<Item> itens;
+
+	public CarrinhoCompras() {
+		this.itens = new ArrayList<Item>();
+	}
 
     /**
      * Permite a adição de um novo item no carrinho de compras.
@@ -25,6 +34,21 @@ public class CarrinhoCompras {
      */
     public void adicionarItem(Produto produto, BigDecimal valorUnitario, int quantidade) {
 
+		if (produto == null || valorUnitario == null || quantidade <= 0) {
+			throw new IllegalArgumentException("Todos os campos devem ser preenchidos.");
+		}
+
+		for (Item item: itens) {
+			if (item.getProduto().equals(produto)) {
+				item.setQuantidade(item.getQuantidade() + quantidade);
+				return;
+			}
+
+		}
+
+		Item novoItem = new Item(produto, valorUnitario, quantidade);
+		itens.add(novoItem);
+
     }
 
     /**
@@ -36,7 +60,17 @@ public class CarrinhoCompras {
      */
     public boolean removerItem(Produto produto) {
 
-    }
+		Iterator<Item> it = itens.iterator();
+		while (it.hasNext()) {
+			Item item = it.next();
+			if (item.getProduto().equals(produto)) {
+				it.remove();
+				return true;
+			}
+		}
+
+		return false;
+	}
 
     /**
      * Permite a remoção do item de acordo com a posição.
@@ -49,6 +83,17 @@ public class CarrinhoCompras {
      */
     public boolean removerItem(int posicaoItem) {
 
+		Iterator<Item> it = itens.iterator();
+		int count = 0;
+		while (it.hasNext()) {
+			Item item = it.next();
+			if (count == posicaoItem) {
+				it.remove();
+				return true;
+			}
+			count++;
+		}
+		return false;
     }
 
     /**
@@ -59,6 +104,13 @@ public class CarrinhoCompras {
      */
     public BigDecimal getValorTotal() {
 
+		BigDecimal total = BigDecimal.ZERO;
+		for (Item item: itens) {
+			total = total.add(item.getValorTotal());
+
+		}
+		return total;
+
     }
 
     /**
@@ -67,6 +119,6 @@ public class CarrinhoCompras {
      * @return itens
      */
     public Collection<Item> getItens() {
-
+		return itens;
     }
 }
